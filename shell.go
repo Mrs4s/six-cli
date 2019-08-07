@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	//"github.com/abiosoft/readline"
+	"github.com/Mrs4s/ishell"
 	"github.com/fatih/color"
-	"gopkg.in/abiosoft/ishell.v2"
 	"os"
 	"reflect"
 	"strings"
@@ -40,7 +39,7 @@ func runAsShell() {
 	shell.Println("欢迎使用6 Pan命令行客户端!")
 	shell.Println("开发By Mrs4s")
 	shell.Println("")
-	shell.SetPrompt("guest@six-pan:/# ")
+	shell.SetPrompt("guest@six-pan:/$ ")
 	// delete default commands
 	shell.DeleteCmd("exit")
 	shell.DeleteCmd("clear")
@@ -240,7 +239,7 @@ func (handler) JoinPathCompleter([]string) []string {
 }
 
 func refreshPrompt() {
-	shell.SetPrompt(currentUser.Username + "@six-pan:" + currentPath + "# ")
+	shell.SetPrompt(currentUser.Username + "@six-pan:" + currentPath + "$ ")
 }
 
 func filterCurrentFiles() []string {

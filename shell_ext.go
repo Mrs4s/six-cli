@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Mrs4s/readline"
 	"github.com/Mrs4s/six-cli/models"
-	"github.com/abiosoft/readline"
 	"github.com/mattn/go-runewidth"
 	"math"
 	"strings"
