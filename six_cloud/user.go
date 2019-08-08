@@ -29,7 +29,19 @@ func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
 		res = append(res, parseFiles(info.Get("result.list").Array())...)
 		page++
 	}
+	for _, file := range res {
+		file.owner = user
+	}
 	return res, nil
+}
+
+func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
+	body := `{"path":"` + path + `"}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/get", body))
+	if !info.Get("success").Bool() {
+		return "", errors.New(info.Get("message").Str)
+	}
+	return info.Get("result.downloadAddress").Str, nil
 }
 
 func parseFiles(list []gjson.Result) []*SixFile {

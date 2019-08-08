@@ -27,6 +27,8 @@ type (
 		Mime           string `json:"mime"`
 		ParentIdentity string `json:"parent"`
 		IsDir          bool   `json:"directory"`
+
+		owner *SixUser
 	}
 )
 

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -25,6 +26,11 @@ func GetParentPath(path string) string {
 		return "/"
 	}
 	return parentPath
+}
+
+func GetFileName(file string) string {
+	_, name := path.Split(file)
+	return name
 }
 
 func CombinePaths(path1, path2, sep string) string {

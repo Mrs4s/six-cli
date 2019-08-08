@@ -1,5 +1,7 @@
 github.com/Mrs4s/argv v0.0.0-20190807004248-0c89c6f8ab29 h1:hdUQ2FLl5k+zlHElx1eLIqTUGW8SsMnhdwv6M9tWqbE=
 github.com/Mrs4s/argv v0.0.0-20190807004248-0c89c6f8ab29/go.mod h1:TbPS3Ij5eRJUiex+x2l89squHcfC/nXDoEeQ4WKym0w=
+github.com/Mrs4s/go-http-downloader v0.0.0-20190706153654-4c7117d06d66 h1:UcF9IjVT59dACc5nExm1kvAizPhOpfnzEn/Pi+r0gPI=
+github.com/Mrs4s/go-http-downloader v0.0.0-20190706153654-4c7117d06d66/go.mod h1:0UlmXPPTgbr2Ou8FJnWSY4dTHN3Z2uGB5rSP2oj1qb4=
 github.com/Mrs4s/go-shlex v0.0.0-20190807232614-d172964e699b h1:+zcV9/Se1aT9/LsEZ7oHVIZ9Iwx0eWmWDwpnAfXVDu4=
 github.com/Mrs4s/go-shlex v0.0.0-20190807232614-d172964e699b/go.mod h1:U39QMOKJwKJvQnpVXtQt+oWysXUrrKYwi4YtkDkiFh4=
 github.com/Mrs4s/ishell v2.3.0+incompatible h1:NLBYde8vZtJegfdKpGNPnM261eqh2OL0MKtL4sKt3k8=

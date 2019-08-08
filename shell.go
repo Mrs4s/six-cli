@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Mrs4s/argv"
+	httpDownloader "github.com/Mrs4s/go-http-downloader"
 	"github.com/Mrs4s/six-cli/models"
 	"github.com/Mrs4s/six-cli/six_cloud"
 	"strconv"
@@ -28,7 +29,8 @@ func init() {
 		"Login":     "登录6 Pan",
 		"ListFiles": "列出当前目录文件列表 | ls",
 		"JoinPath":  "进入目录 | cd",
-		"CopyFile":  "复制文件或目录 | cp",
+		//"CopyFile":  "复制文件或目录 | cp",
+		"Download": "下载文件或文件夹 | down",
 	}
 }
 
@@ -56,6 +58,7 @@ func runAsShell() {
 			c.Println("再次键入 Ctrl+C 以确认退出")
 			return
 		}
+		models.DefaultConf.SaveFile("config.json")
 		os.Exit(0)
 	})
 	initCommands()
@@ -82,7 +85,6 @@ func initCommands() {
 			}
 			var compFunc func([]string) []string
 			comp := v.MethodByName(m.Name + "Completer")
-
 			if comp.IsValid() {
 				compFunc = comp.Interface().(func([]string) []string)
 			}
@@ -113,6 +115,7 @@ func (handler) Login(c *ishell.Context, args *argv.Args) {
 	}
 	currentUser = user
 	currentPath = "/"
+	models.DefaultConf.QingzhenToken = currentUser.Client.QingzhenToken
 	c.Println("登录完成, 欢迎: " + currentUser.Username)
 	refreshPrompt()
 }
@@ -192,8 +195,52 @@ func (handler) ListFiles(c *ishell.Context, args *argv.Args) {
 	PrintColumns(printColor(filteredFiles), 2)
 }
 
+/*
 func (handler) CopyFile(c *ishell.Context, args *argv.Args) {
 
+}
+*/
+
+func (handler) Download(c *ishell.Context, args *argv.Args) {
+	if len(args.Nokeys) != 1 || len(args.Nokeys[0]) == 0 {
+		c.Println("使用方法: down <文件/目录>")
+		return
+	}
+	targetPath := currentPath
+	if args.Nokeys[0][0:1] == "/" {
+		targetPath = models.GetParentPath(args.Nokeys[0])
+	}
+	files, err := currentUser.GetFilesByPath(targetPath)
+	if err != nil {
+		c.Println("错误:", err)
+		return
+	}
+	var target *six_cloud.SixFile
+	for _, file := range files {
+		if file.Name == models.GetFileName(args.Nokeys[0]) {
+			target = file
+			continue
+		}
+	}
+	if target == nil {
+		c.Println("错误: 目标文件/目录不存在")
+		return
+	}
+	for key, file := range target.GetLocalTree(models.DefaultConf.DownloadPath) {
+		c.Println("添加下载", file.Path, "...")
+		addr, err := file.GetDownloadAddress()
+		if err != nil {
+			c.Println("获取文件", file.Name, "的下载链接失败:", err)
+			continue
+		}
+		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, models.DefaultConf.DownloadBlockSize, int(models.DefaultConf.DownloadThread),
+			map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:67.0) Gecko/20100101 Firefox/67.0"})
+		models.DownloaderList = append(models.DownloaderList, httpDownloader.NewClient(info))
+	}
+}
+
+func (handler) DownloadCompleter([]string) []string {
+	return filterCurrentFiles()
 }
 
 func (handler) JoinPath(c *ishell.Context, args *argv.Args) {
