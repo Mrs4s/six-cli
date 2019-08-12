@@ -4,8 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"github.com/mattn/go-runewidth"
 	"os"
-	"path"
 	"strings"
 )
 
@@ -28,9 +28,17 @@ func GetParentPath(path string) string {
 	return parentPath
 }
 
-func GetFileName(file string) string {
-	_, name := path.Split(file)
-	return name
+func GetFileName(path string) string {
+	length := len(path)
+	index := length - 1
+	for index > 0 {
+		char := path[index-1 : index]
+		if char == "\\" || char == "/" || char == ":" {
+			return path[index:length]
+		}
+		index--
+	}
+	return path
 }
 
 func CombinePaths(path1, path2, sep string) string {
@@ -67,14 +75,39 @@ func ConvertSizeString(size int64) string {
 	}
 }
 
+func ShortString(str string, length int) string {
+	sb := strings.Builder{}
+	var num int
+	for _, s := range str {
+		num += runewidth.RuneWidth(s)
+		if num > length {
+			sb.WriteString("...")
+			break
+		}
+		sb.WriteRune(s)
+	}
+	return sb.String()
+}
+
 func PathExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil || os.IsExist(err)
 }
 
-func Max(a int, b int) int {
-	if a > b {
-		return a
+func SelectStrings(arr []string, selector func(string) string) []string {
+	var res []string
+	for _, str := range arr {
+		res = append(res, selector(str))
 	}
-	return b
+	return res
+}
+
+func FilterStrings(arr []string, filter func(string) bool) []string {
+	var res []string
+	for _, str := range arr {
+		if filter(str) {
+			res = append(res, str)
+		}
+	}
+	return res
 }
