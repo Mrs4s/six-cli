@@ -29,7 +29,7 @@ func (CommandHandler) Login(c *pl.Context) {
 	}
 	user, err := six_cloud.LoginWithUsernameOrPhone(username, password)
 	if err != nil {
-		fmt.Println("[-] 登录失败: " + err.Error())
+		fmt.Println("[!] 登录失败: " + err.Error())
 		return
 	}
 	shell.CurrentUser = user

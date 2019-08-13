@@ -11,7 +11,7 @@
 go get github.com/Mrs4s/six-cli
 ````
 
-> 也可从 [Releases](https://github.com/Mrs4s/six-cli) 直接下载二进制 
+> 也可从 [Releases](https://github.com/Mrs4s/six-cli/release) 直接下载二进制 
 
 ##  使用方法
 

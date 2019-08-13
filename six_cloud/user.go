@@ -44,6 +44,24 @@ func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
 	return info.Get("result.downloadAddress").Str, nil
 }
 
+func (user *SixUser) CreateDirectory(path string) error {
+	body := `{"path":"` + path + `"}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/createDirectory", body))
+	if !info.Get("success").Bool() {
+		return errors.New(info.Get("message").Str)
+	}
+	return nil
+}
+
+func (user *SixUser) DeleteFile(path string) error {
+	body := `{"source":[{"path":"` + path + `"}]}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/delete", body))
+	if !info.Get("success").Bool() {
+		return errors.New(info.Get("message").Str)
+	}
+	return nil
+}
+
 func parseFiles(list []gjson.Result) []*SixFile {
 	var res []*SixFile
 	for _, r := range list {

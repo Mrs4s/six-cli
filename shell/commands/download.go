@@ -33,7 +33,7 @@ func (CommandHandler) Download(c *pl.Context) {
 	}
 	files, err := shell.CurrentUser.GetFilesByPath(targetPath)
 	if err != nil {
-		fmt.Println("[-] 错误:", err)
+		fmt.Println("[!] 错误:", err)
 		return
 	}
 	var target *six_cloud.SixFile
@@ -44,7 +44,7 @@ func (CommandHandler) Download(c *pl.Context) {
 		}
 	}
 	if target == nil {
-		fmt.Println("[-] 错误: 目标文件/目录不存在")
+		fmt.Println("[!] 错误: 目标文件/目录不存在")
 		return
 	}
 	var downloaders []*httpDownloader.DownloaderClient
@@ -52,7 +52,7 @@ func (CommandHandler) Download(c *pl.Context) {
 		fmt.Println("[+] 添加下载", models.ShortString(models.GetFileName(file.Path), 70))
 		addr, err := file.GetDownloadAddress()
 		if err != nil {
-			fmt.Println("[-] 获取文件", file.Name, "的下载链接失败:", err)
+			fmt.Println("[!] 获取文件", file.Name, "的下载链接失败:", err)
 			continue
 		}
 		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, models.DefaultConf.DownloadBlockSize, int(models.DefaultConf.DownloadThread),
@@ -69,8 +69,8 @@ func (CommandHandler) Download(c *pl.Context) {
 	}
 	pool, err := pb.StartPool(bars...)
 	if err != nil {
-		fmt.Println("[-] 创建进度条失败, 无法显示进度，请等待后台下载完成.")
-		fmt.Println("[-] 错误信息:", err)
+		fmt.Println("[!] 创建进度条失败, 无法显示进度，请等待后台下载完成.")
+		fmt.Println("[!] 错误信息:", err)
 		<-ch
 		fmt.Println("[+] 所有文件已下载完成.")
 		return

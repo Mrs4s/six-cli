@@ -39,3 +39,12 @@ func RunAsShell(handler pl.IHandler) {
 	App.AddHandler(handler)
 	App.RunAsShell()
 }
+
+func RunAsCli(handler pl.IHandler) {
+	if models.DefaultConf.QingzhenToken != "" {
+		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenToken)
+	}
+	App = pl.NewApp()
+	App.AddHandler(handler)
+	App.RunAsCli(os.Args[1:])
+}

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/Mrs4s/six-cli/models"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
 )
@@ -22,7 +23,7 @@ func (CommandHandler) Explains() map[string]string {
 }
 
 func refreshPrompt() {
-	shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + shell.CurrentPath + "$ ")
+	shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(shell.CurrentPath, 30) + "$ ")
 }
 
 func filterCurrentDirs() []string {

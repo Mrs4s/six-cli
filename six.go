@@ -6,6 +6,7 @@ import (
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/shell/commands"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -24,7 +25,15 @@ func main() {
 			_ = os.MkdirAll("Downloads", os.ModePerm)
 		}
 	}
-	shell.RunAsShell(&commands.CommandHandler{})
+	if len(os.Args) == 1 {
+		shell.RunAsShell(&commands.CommandHandler{})
+		os.Exit(0)
+	}
+	if strings.ToLower(os.Args[1]) == "cui" {
+		//TODO: CUI Support
+		os.Exit(0)
+	}
+	shell.RunAsCli(&commands.CommandHandler{})
 	/*
 		if len(os.Args) == 1 {
 			fmt.Println("usage: six-cli <command> or six-cli shell")

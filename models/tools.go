@@ -89,6 +89,14 @@ func ShortString(str string, length int) string {
 	return sb.String()
 }
 
+func ShortPath(path string, length int) string {
+	sub := FilterStrings(strings.Split(path, "/"), func(s string) bool { return s != "" })
+	if len(sub) == 0 {
+		return path
+	}
+	return "/" + strings.Join(SelectStrings(sub, func(s string) string { return ShortString(s, length) }), "/")
+}
+
 func PathExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil || os.IsExist(err)

@@ -24,7 +24,7 @@ func (CommandHandler) JoinPath(c *pl.Context) {
 	case arg[0:1] == "/":
 		_, err := shell.CurrentUser.GetFilesByPath(arg)
 		if err != nil {
-			fmt.Println("[-] 切换失败: " + err.Error())
+			fmt.Println("[!] 切换失败: " + err.Error())
 			return
 		}
 		shell.CurrentPath = arg
@@ -44,7 +44,7 @@ func (CommandHandler) JoinPath(c *pl.Context) {
 		newPath := models.CombinePaths(shell.CurrentPath, arg, "/")
 		_, err := shell.CurrentUser.GetFilesByPath(newPath)
 		if err != nil {
-			fmt.Println("[-] 切换失败: " + err.Error())
+			fmt.Println("[!] 切换失败: " + err.Error())
 			return
 		}
 		shell.CurrentPath = newPath

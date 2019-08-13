@@ -6,6 +6,7 @@ import (
 	"github.com/Mrs4s/six-cli/models"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
+	"github.com/fatih/color"
 	"strconv"
 	"strings"
 	"time"
@@ -17,37 +18,30 @@ func init() {
 }
 
 func (CommandHandler) List(c *pl.Context) {
-	var (
-		//blue       = color.New(color.FgBlue).SprintFunc()
-		//green      = color.New(color.FgGreen).SprintFunc()
-		files, err = shell.CurrentUser.GetFilesByPath(shell.CurrentPath)
-	)
+	files, err := shell.CurrentUser.GetFilesByPath(shell.CurrentPath)
 	if len(c.Nokeys) >= 1 {
 		tar := strings.Join(c.Nokeys, " ")
 		if len(tar) == 0 || tar[0:1] != "/" {
-			fmt.Println("[-] 非法操作")
+			fmt.Println("[!] 非法操作")
 			return
 		}
 		files, err = shell.CurrentUser.GetFilesByPath(tar)
 	}
 	if err != nil {
-		fmt.Println("[-] 获取文件失败: " + err.Error())
+		fmt.Println("[!] 获取文件失败: " + err.Error())
 		return
 	}
 	if len(files) == 0 {
-		fmt.Println("[-] 当前目录下无任何文件")
+		fmt.Println("[!] 当前目录下无任何文件")
 		return
 	}
 	printColor := func(files []*six_cloud.SixFile) (strs []string) {
-		// 暂不支持染色
 		for _, file := range files {
 			if file.IsDir {
-				//strs = append(strs, blue(file.Name))
-				strs = append(strs, file.Name)
+				strs = append(strs, color.BlueString(file.Name))
 				continue
 			}
-			//strs = append(strs, green(file.Name))
-			strs = append(strs, file.Name)
+			strs = append(strs, color.GreenString(file.Name))
 		}
 		return
 	}
