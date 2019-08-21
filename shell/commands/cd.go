@@ -52,10 +52,35 @@ func (CommandHandler) JoinPath(c *pl.Context) {
 }
 
 func (CommandHandler) JoinPathCompleter(c *pl.Context) []string {
-	return models.SelectStrings(filterCurrentDirs(), func(s string) string {
-		if strings.Contains(s, " ") {
-			return "\"" + s + "\""
+	if len(c.Nokeys) > 1 {
+		return []string{}
+	}
+	if len(strings.Split(c.Nokeys[0], "/")) <= 1 {
+		return models.SelectStrings(filterCurrentDirs(), func(s string) string {
+			if strings.Contains(s, " ") {
+				return "\"" + s + "\""
+			}
+			return s
+		})
+	}
+	newPath := shell.CurrentPath + "/" + c.Nokeys[0]
+	if shell.CurrentPath == "/" {
+		newPath = "/" + c.Nokeys[0]
+	}
+	files, err := shell.CurrentUser.GetFilesByPath(models.GetParentPath(newPath))
+	if err != nil {
+		return []string{}
+	}
+	return models.SelectStrings(models.FilterStrings(filterDirs(files), func(s string) bool {
+		if strings.HasSuffix(newPath, "/") {
+			return true
 		}
-		return s
+		return strings.HasPrefix(s, models.GetFileName(newPath))
+	}), func(s string) string {
+		com := models.CombinePaths(models.GetParentPath(newPath), s, "/")
+		if strings.Contains(com, " ") {
+			return "\"" + com[1:] + "\""
+		}
+		return com[1:]
 	})
 }

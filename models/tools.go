@@ -102,6 +102,35 @@ func PathExists(path string) bool {
 	return err == nil || os.IsExist(err)
 }
 
+func ShellMatch(str, p string) bool {
+	var (
+		j, i, star, last int
+		rs               = []rune(str)
+		rp               = []rune(p)
+	)
+
+	for i < len(rs) {
+		if j < len(rp) && (rs[i] == rp[j] || rp[j] == '?') {
+			i++
+			j++
+		} else if j < len(rp) && rp[j] == '*' {
+			j++
+			last = i
+			star = j
+		} else if star != 0 {
+			last++
+			i = last
+			j = star
+		} else {
+			return false
+		}
+	}
+	for j < len(rp) && rp[j] == '*' {
+		j++
+	}
+	return j == len(rp)
+}
+
 func SelectStrings(arr []string, selector func(string) string) []string {
 	var res []string
 	for _, str := range arr {

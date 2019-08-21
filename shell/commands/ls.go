@@ -19,10 +19,23 @@ func init() {
 
 func (CommandHandler) List(c *pl.Context) {
 	files, err := shell.CurrentUser.GetFilesByPath(shell.CurrentPath)
+	printColor := func(files []*six_cloud.SixFile) (strs []string) {
+		for _, file := range files {
+			if file.IsDir {
+				strs = append(strs, color.BlueString(file.Name))
+				continue
+			}
+			strs = append(strs, color.GreenString(file.Name))
+		}
+		return
+	}
 	if len(c.Nokeys) >= 1 {
 		tar := strings.Join(c.Nokeys, " ")
 		if len(tar) == 0 || tar[0:1] != "/" {
-			fmt.Println("[!] 非法操作")
+			//fmt.Println("[!] 非法操作")
+			shell.App.PrintColumns(
+				models.FilterStrings(append(filterCurrentDirs(), filterCurrentFiles()...), func(s string) bool { return models.ShellMatch(s, tar) }), 2,
+			)
 			return
 		}
 		files, err = shell.CurrentUser.GetFilesByPath(tar)
@@ -33,16 +46,6 @@ func (CommandHandler) List(c *pl.Context) {
 	}
 	if len(files) == 0 {
 		fmt.Println("[!] 当前目录下无任何文件")
-		return
-	}
-	printColor := func(files []*six_cloud.SixFile) (strs []string) {
-		for _, file := range files {
-			if file.IsDir {
-				strs = append(strs, color.BlueString(file.Name))
-				continue
-			}
-			strs = append(strs, color.GreenString(file.Name))
-		}
 		return
 	}
 	filteredFiles := files
