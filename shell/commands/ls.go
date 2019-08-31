@@ -6,7 +6,6 @@ import (
 	"github.com/Mrs4s/six-cli/models"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
-	"github.com/fatih/color"
 	"strconv"
 	"strings"
 	"time"
@@ -22,10 +21,12 @@ func (CommandHandler) List(c *pl.Context) {
 	printColor := func(files []*six_cloud.SixFile) (strs []string) {
 		for _, file := range files {
 			if file.IsDir {
-				strs = append(strs, color.BlueString(file.Name))
+				//strs = append(strs, color.BlueString(file.Name))
+				strs = append(strs, file.Name)
 				continue
 			}
-			strs = append(strs, color.GreenString(file.Name))
+			//strs = append(strs, color.GreenString(file.Name))
+			strs = append(strs, file.Name)
 		}
 		return
 	}

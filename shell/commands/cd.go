@@ -42,6 +42,9 @@ func (CommandHandler) JoinPath(c *pl.Context) {
 		}
 	default:
 		newPath := models.CombinePaths(shell.CurrentPath, arg, "/")
+		if strings.HasSuffix(newPath, "/") {
+			newPath = newPath[:len(newPath)-1]
+		}
 		_, err := shell.CurrentUser.GetFilesByPath(newPath)
 		if err != nil {
 			fmt.Println("[!] 切换失败: " + err.Error())
@@ -60,7 +63,7 @@ func (CommandHandler) JoinPathCompleter(c *pl.Context) []string {
 			if strings.Contains(s, " ") {
 				return "\"" + s + "\""
 			}
-			return s
+			return s + "/"
 		})
 	}
 	newPath := shell.CurrentPath + "/" + c.Nokeys[0]
@@ -81,6 +84,6 @@ func (CommandHandler) JoinPathCompleter(c *pl.Context) []string {
 		if strings.Contains(com, " ") {
 			return "\"" + com[1:] + "\""
 		}
-		return com[1:]
+		return com[1:] + "/"
 	})
 }

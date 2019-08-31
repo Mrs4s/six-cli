@@ -12,8 +12,8 @@ import (
 func main() {
 	if !models.PathExists("config.json") {
 		tmpConf := &models.Config{
-			DownloadThread: 16,
-			PeakTaskCount:  2,
+			DownloadThread:    16,
+			DownloadBlockSize: 104857600,
 		}
 		tmpConf.SaveFile("config.json")
 	}

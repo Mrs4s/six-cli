@@ -8,6 +8,7 @@ import (
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
 	"github.com/cheggaaa/pb"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -38,7 +39,7 @@ func (CommandHandler) Download(c *pl.Context) {
 	}
 	var target *six_cloud.SixFile
 	for _, file := range files {
-		if file.Name == models.GetFileName(path) {
+		if strings.HasPrefix(file.Name, models.GetFileName(path)) {
 			target = file
 			continue
 		}
@@ -67,14 +68,6 @@ func (CommandHandler) Download(c *pl.Context) {
 		bar.ShowSpeed = true
 		bars = append(bars, bar)
 	}
-	pool, err := pb.StartPool(bars...)
-	if err != nil {
-		fmt.Println("[!] 创建进度条失败, 无法显示进度，请等待后台下载完成.")
-		fmt.Println("[!] 错误信息:", err)
-		<-ch
-		fmt.Println("[+] 所有文件已下载完成.")
-		return
-	}
 	go func() {
 		ticker := time.NewTicker(time.Second).C
 		for range ticker {
@@ -89,18 +82,27 @@ func (CommandHandler) Download(c *pl.Context) {
 					waitingTask = i
 				}
 			}
-			if downloadingCount < int(models.DefaultConf.PeakTaskCount) && waitingTask != -1 {
+			if downloadingCount < 1 && waitingTask != -1 {
 				task := downloaders[waitingTask]
+				fmt.Println()
+				fmt.Println("[+] 即将开始下载任务 " + strconv.FormatInt(int64(waitingTask), 10))
+				fmt.Println("[+] 文件名: " + models.GetFileName(task.Info.TargetFile))
+				fmt.Println("[+] 文件大小: " + models.ConvertSizeString(task.Info.ContentSize))
+				fmt.Println()
+				bars[waitingTask].Start()
 				err := task.BeginDownload()
 				if err != nil {
-					//fmt.Println("[-] 文件", models.GetFileName(task.Info.TargetFile), "下载失败:", err)
+					bars[waitingTask].Finish()
+					fmt.Println("[-] 文件", models.GetFileName(task.Info.TargetFile), "下载失败:", err)
 					continue
 				}
 				task.OnCompleted(func() {
 					bars[waitingTask].Finish()
+					fmt.Println("[+] 文件", models.GetFileName(task.Info.TargetFile), "下载完成")
 				})
 				task.OnFailed(func(err error) {
 					bars[waitingTask].Finish()
+					fmt.Println("[-] 文件", models.GetFileName(task.Info.TargetFile), "下载失败:", err)
 				})
 			}
 			if downloadingCount == 0 && waitingTask == -1 {
@@ -110,7 +112,6 @@ func (CommandHandler) Download(c *pl.Context) {
 		}
 	}()
 	<-ch
-	pool.Stop()
 	time.Sleep(time.Second)
 	fmt.Println("[+] 所有文件已下载完成.")
 }

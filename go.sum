@@ -1,5 +1,7 @@
 github.com/Mrs4s/go-http-downloader v0.0.0-20190810235920-8557ff583cf7 h1:9Hxnvqe+9/rDRCpA6dypfznvKVcoGIsJ5cY1G7KZAF8=
 github.com/Mrs4s/go-http-downloader v0.0.0-20190810235920-8557ff583cf7/go.mod h1:0UlmXPPTgbr2Ou8FJnWSY4dTHN3Z2uGB5rSP2oj1qb4=
+github.com/Mrs4s/go-http-downloader v0.0.0-20190825054555-93ff95d45d55 h1:nfHgMXvmWzEaioGStdpXZEuHrFMSZksadYM+wdeQ96c=
+github.com/Mrs4s/go-http-downloader v0.0.0-20190825054555-93ff95d45d55/go.mod h1:0UlmXPPTgbr2Ou8FJnWSY4dTHN3Z2uGB5rSP2oj1qb4=
 github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290 h1:LEkqKSXMh0Q1yNeTpTFG29CDMebu8vE9S3oji9yA9H4=
 github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290/go.mod h1:4s0ciBm9jWwKEwW0CIdfvfdi31Vc5sVUtlCR8teNID0=
 github.com/cheggaaa/pb v1.0.28 h1:kWGpdAcSp3MxMU9CCHOwz/8V0kCHN4+9yQm2MzWuI98=
