@@ -34,6 +34,10 @@ func RunAsShell(handler pl.IHandler) {
 	})
 	if CurrentUser != nil {
 		fmt.Println("自动登录成功, 欢迎您", CurrentUser.Username)
+		_, _ = fmt.Fprintf(os.Stdout, "当前用量: %s / %s  (%.2f%%)\n",
+			models.ConvertSizeString(CurrentUser.UsedSpace),
+			models.ConvertSizeString(CurrentUser.TotalSpace),
+			float64(CurrentUser.UsedSpace)/float64(CurrentUser.TotalSpace)*100)
 		App.SetPrompt(CurrentUser.Username + "@six-pan:/$ ")
 	}
 	App.AddHandler(handler)

@@ -7,6 +7,7 @@ require (
 	github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290
 	github.com/cheggaaa/pb v1.0.28
 	github.com/fatih/color v1.7.0
+	github.com/jackpal/bencode-go v0.0.0-20180813173944-227668e840fa
 	github.com/mattn/go-colorable v0.1.2
 	github.com/mattn/go-runewidth v0.0.4
 	github.com/stretchr/testify v1.3.0 // indirect

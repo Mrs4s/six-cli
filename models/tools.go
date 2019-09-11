@@ -102,6 +102,11 @@ func PathExists(path string) bool {
 	return err == nil || os.IsExist(err)
 }
 
+func GetFileExtension(file string) string {
+	sp := strings.Split(file, ".")
+	return sp[len(sp)-1]
+}
+
 func ShellMatch(str, p string) bool {
 	var (
 		j, i, star, last int

@@ -3,6 +3,7 @@ package six_cloud
 import (
 	"encoding/json"
 	"errors"
+	"github.com/Mrs4s/six-cli/models"
 	"github.com/tidwall/gjson"
 	"strconv"
 )
@@ -33,6 +34,19 @@ func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
 		file.owner = user
 	}
 	return res, nil
+}
+
+func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
+	files, err := user.GetFilesByPath(models.GetParentPath(path))
+	if err != nil {
+		return nil, err
+	}
+	for _, file := range files {
+		if file.Name == models.GetFileName(path) {
+			return file, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
 
 func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {

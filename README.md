@@ -1,9 +1,6 @@
 # 6盘 CLI工具操作指南
 
-> 建议在 Unix-like 系统下使用本工具的shell模式
->
-> 理论上不支持win10 TH2以下的原生命令行, 因为[在微软Windows 10更新TH2之前，Windows操作系统的Win32控制台是不支持ANSI转义序列的](https://zh.wikipedia.org/zh-hans/ANSI%E8%BD%AC%E4%B9%89%E5%BA%8F%E5%88%97)
-> 推荐使用powershell
+> 目前正在开发中，部分功能可能会有巨变
 
 ## 安装
 

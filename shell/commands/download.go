@@ -24,6 +24,9 @@ func (CommandHandler) Download(c *pl.Context) {
 		return
 	}
 	path := c.Nokeys[0]
+	if strings.HasSuffix(path, "/") {
+		path = path[:len(path)-1]
+	}
 	targetPath := shell.CurrentPath
 	if len(path) == 0 {
 		fmt.Println("[H] 使用方法: down <文件/目录>")
@@ -117,13 +120,5 @@ func (CommandHandler) Download(c *pl.Context) {
 }
 
 func (CommandHandler) DownloadCompleter(c *pl.Context) []string {
-	if len(c.Nokeys) > 1 {
-		return []string{}
-	}
-	return models.SelectStrings(append(filterCurrentDirs(), filterCurrentFiles()...), func(s string) string {
-		if strings.Contains(s, " ") {
-			return "\"" + s + "\""
-		}
-		return s
-	})
+	return PathCompleter(c, true)
 }
