@@ -116,3 +116,13 @@ func filterFiles(files []*six_cloud.SixFile) (res []string) {
 	}
 	return
 }
+
+func filterFileArray(arr []*six_cloud.SixFile, filter func(*six_cloud.SixFile) bool) []*six_cloud.SixFile {
+	var res []*six_cloud.SixFile
+	for _, file := range arr {
+		if filter(file) {
+			res = append(res, file)
+		}
+	}
+	return res
+}

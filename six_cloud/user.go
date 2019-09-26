@@ -49,6 +49,25 @@ func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
 	return nil, errors.New("not found")
 }
 
+func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {
+	var (
+		body = `{"page": 1,"pageSize": 200}`
+		info = gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/page", body))
+		res  []*SixOfflineTask
+	)
+	if !info.Get("success").Bool() {
+		return nil, errors.New(info.Get("message").Str)
+	}
+	for _, token := range info.Get("result.list").Array() {
+		var task *SixOfflineTask
+		err := json.Unmarshal([]byte(token.Raw), &task)
+		if err == nil {
+			res = append(res, task)
+		}
+	}
+	return res, nil
+}
+
 func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
 	body := `{"path":"` + path + `"}`
 	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/get", body))
@@ -72,6 +91,40 @@ func (user *SixUser) DeleteFile(path string) error {
 	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/delete", body))
 	if !info.Get("success").Bool() {
 		return errors.New(info.Get("message").Str)
+	}
+	return nil
+}
+
+func (user *SixUser) SearchFilesByName(name string) ([]*SixFile, error) {
+	body := `{"pageSize":200,"name":"` + name + `"}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/pageAll", body))
+	if !info.Get("success").Bool() {
+		return nil, errors.New(info.Get("message").Str)
+	}
+	files := parseFiles(info.Get("result.list").Array())
+	return files, nil
+}
+
+func (user *SixUser) PreparseOffline(url, pass string) (string, string, int64, error) {
+	body := `{"url": "` + url + `","password": "` + pass + `"}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/parseUrl", body))
+	if !info.Get("success").Bool() {
+		return "", "", 0, errors.New(info.Get("messages").Str)
+	}
+	if len(info.Get("result").Array()) == 0 {
+		return "", "", 0, errors.New("not any results")
+	}
+	return info.Get("result.0.identity").Str, info.Get("result.0.name").Str, info.Get("result.0.size").Int(), nil
+}
+
+func (user *SixUser) AddOfflineTask(identity, path string) error {
+	body := `{"path": "` + path + `","task":[{"identity" : "` + identity + `"}]}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/add", body))
+	if !info.Get("success").Bool() {
+		return errors.New(info.Get("message").Str)
+	}
+	if !info.Get("result.success").Bool() {
+		return errors.New("unknown error")
 	}
 	return nil
 }

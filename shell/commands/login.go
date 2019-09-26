@@ -36,5 +36,6 @@ func (CommandHandler) Login(c *pl.Context) {
 	shell.CurrentPath = "/"
 	models.DefaultConf.QingzhenToken = user.Client.QingzhenToken
 	fmt.Println("[+] 登录完成, 欢迎: " + user.Username)
+	models.DefaultConf.SaveFile("config.json")
 	refreshPrompt()
 }
