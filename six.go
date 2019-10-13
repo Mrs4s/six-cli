@@ -12,7 +12,7 @@ import (
 func main() {
 	if !models.PathExists("config.json") {
 		tmpConf := &models.Config{
-			DownloadThread:    16,
+			DownloadThread:    8,
 			DownloadBlockSize: 104857600,
 		}
 		tmpConf.SaveFile("config.json")
@@ -34,14 +34,4 @@ func main() {
 		os.Exit(0)
 	}
 	shell.RunAsCli(&commands.CommandHandler{})
-	/*
-		if len(os.Args) == 1 {
-			fmt.Println("usage: six-cli <command> or six-cli shell")
-			return
-		}
-		if os.Args[1] == "shell" {
-			runAsShell()
-			return
-		}
-	*/
 }

@@ -95,6 +95,15 @@ func (user *SixUser) DeleteFile(path string) error {
 	return nil
 }
 
+func (user *SixUser) CopyFile(source, target string) error {
+	body := `{"source": [{"path": "` + source + `"}],"destination": {"path": "` + target + `"}}`
+	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/copy", body))
+	if !info.Get("success").Bool() {
+		return errors.New(info.Get("message").Str)
+	}
+	return nil
+}
+
 func (user *SixUser) SearchFilesByName(name string) ([]*SixFile, error) {
 	body := `{"pageSize":200,"name":"` + name + `"}`
 	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/pageAll", body))

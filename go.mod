@@ -3,7 +3,7 @@ module github.com/Mrs4s/six-cli
 go 1.12
 
 require (
-	github.com/Mrs4s/go-http-downloader v0.0.0-20190825054555-93ff95d45d55
+	github.com/Mrs4s/go-http-downloader v0.0.0-20191011104526-662f3edfd207
 	github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290
 	github.com/cheggaaa/pb v1.0.28
 	github.com/fatih/color v1.7.0

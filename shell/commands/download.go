@@ -61,7 +61,15 @@ func (CommandHandler) Download(c *pl.Context) {
 		}
 		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, models.DefaultConf.DownloadBlockSize, int(models.DefaultConf.DownloadThread),
 			map[string]string{"User-Agent": "Six-cli download engine"})
-		downloaders = append(downloaders, httpDownloader.NewClient(info))
+		client := httpDownloader.NewClient(info)
+		client.RefreshFunc = func() []string {
+			addr, err := file.GetDownloadAddress()
+			if err != nil {
+				return []string{}
+			}
+			return []string{addr}
+		}
+		downloaders = append(downloaders, client)
 	}
 	ch := make(chan bool)
 	defer close(ch)
