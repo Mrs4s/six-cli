@@ -62,8 +62,9 @@ func (CommandHandler) Download(c *pl.Context) {
 		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, models.DefaultConf.DownloadBlockSize, int(models.DefaultConf.DownloadThread),
 			map[string]string{"User-Agent": "Six-cli download engine"})
 		client := httpDownloader.NewClient(info)
+		p := file
 		client.RefreshFunc = func() []string {
-			addr, err := file.GetDownloadAddress()
+			addr, err := p.GetDownloadAddress()
 			if err != nil {
 				return []string{}
 			}
