@@ -10,13 +10,19 @@ import (
 
 var (
 	CurrentUser *six_cloud.SixUser
+	SavedUsers  []*six_cloud.SixUser
 	CurrentPath = "/"
 	App         *pl.Shell
 )
 
 func RunAsShell(handler pl.IHandler) {
-	if models.DefaultConf.QingzhenToken != "" {
-		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenToken)
+	if models.DefaultConf.QingzhenTokens != nil && len(models.DefaultConf.QingzhenTokens) > 0 {
+		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenTokens[0])
+		for _, token := range models.DefaultConf.QingzhenTokens {
+			if user, err := six_cloud.LoginWithAccessToken(token); err == nil {
+				SavedUsers = append(SavedUsers, user)
+			}
+		}
 	}
 	App = pl.NewApp()
 	fmt.Println("欢迎使用6 Pan命令行客户端!")
@@ -38,6 +44,15 @@ func RunAsShell(handler pl.IHandler) {
 			models.ConvertSizeString(CurrentUser.UsedSpace),
 			models.ConvertSizeString(CurrentUser.TotalSpace),
 			float64(CurrentUser.UsedSpace)/float64(CurrentUser.TotalSpace)*100)
+		if len(SavedUsers) > 1 {
+			for _, user := range SavedUsers {
+				if user.Identity == CurrentUser.Identity {
+					fmt.Println("->", user.Username)
+					continue
+				}
+				fmt.Println(user.Username)
+			}
+		}
 		App.SetPrompt(CurrentUser.Username + "@six-pan:/$ ")
 	}
 	App.AddHandler(handler)
@@ -45,8 +60,12 @@ func RunAsShell(handler pl.IHandler) {
 }
 
 func RunAsCli(handler pl.IHandler) {
-	if models.DefaultConf.QingzhenToken != "" {
-		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenToken)
+	if models.DefaultConf.QingzhenTokens != nil && len(models.DefaultConf.QingzhenTokens) > 0 {
+		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenTokens[0])
+	}
+	if CurrentUser == nil {
+		fmt.Println("[!] 请先登录!")
+		return
 	}
 	App = pl.NewApp()
 	App.AddHandler(handler)

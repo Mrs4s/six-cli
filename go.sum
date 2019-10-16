@@ -6,6 +6,8 @@ github.com/Mrs4s/go-http-downloader v0.0.0-20191011102305-da37a7077d6c h1:0n/woR
 github.com/Mrs4s/go-http-downloader v0.0.0-20191011102305-da37a7077d6c/go.mod h1:0UlmXPPTgbr2Ou8FJnWSY4dTHN3Z2uGB5rSP2oj1qb4=
 github.com/Mrs4s/go-http-downloader v0.0.0-20191011104526-662f3edfd207 h1:uAFe6RYNESY6uv42nboHppsnxflu8FMP7POIEC1bX6g=
 github.com/Mrs4s/go-http-downloader v0.0.0-20191011104526-662f3edfd207/go.mod h1:0UlmXPPTgbr2Ou8FJnWSY4dTHN3Z2uGB5rSP2oj1qb4=
+github.com/Mrs4s/go-http-downloader v0.0.0-20191014103207-7f76db391012 h1:LLc7FAja2gtRJQK6r0Fx+B4Ze3noTGpg4zVcGw2G4YE=
+github.com/Mrs4s/go-http-downloader v0.0.0-20191014103207-7f76db391012/go.mod h1:sS5W1ouMjpz7/6Yw2h+xH/QqfF52nQmYsf+vt9S88yg=
 github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290 h1:LEkqKSXMh0Q1yNeTpTFG29CDMebu8vE9S3oji9yA9H4=
 github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290/go.mod h1:4s0ciBm9jWwKEwW0CIdfvfdi31Vc5sVUtlCR8teNID0=
 github.com/cheggaaa/pb v1.0.28 h1:kWGpdAcSp3MxMU9CCHOwz/8V0kCHN4+9yQm2MzWuI98=

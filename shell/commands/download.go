@@ -70,6 +70,7 @@ func (CommandHandler) Download(c *pl.Context) {
 			}
 			return []string{addr}
 		}
+		client.RefreshTime = 1000 * 60 * 3
 		downloaders = append(downloaders, client)
 	}
 	ch := make(chan bool)
@@ -99,6 +100,7 @@ func (CommandHandler) Download(c *pl.Context) {
 				fmt.Println()
 				fmt.Println("[+] 即将开始下载任务 " + strconv.FormatInt(int64(waitingTask), 10))
 				fmt.Println("[+] 文件名: " + models.GetFileName(task.Info.TargetFile))
+				fmt.Println("[+] 下载路径: " + task.Info.TargetFile)
 				fmt.Println("[+] 文件大小: " + models.ConvertSizeString(task.Info.ContentSize))
 				fmt.Println()
 				bars[waitingTask].Start()

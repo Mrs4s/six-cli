@@ -33,6 +33,16 @@ func refreshPrompt() {
 	shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(shell.CurrentPath, 30) + "$ ")
 }
 
+func printUserList() {
+	for _, user := range shell.SavedUsers {
+		if user.Identity == shell.CurrentUser.Identity {
+			fmt.Println("->", user.Username)
+			continue
+		}
+		fmt.Println(user.Username)
+	}
+}
+
 func PathCompleter(c *pl.Context, f bool) []string {
 	if len(c.Nokeys) > 1 {
 		return []string{}
