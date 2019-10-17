@@ -15,4 +15,5 @@ func (CommandHandler) Switch(c *pl.Context) {
 		printUserList()
 		return
 	}
+
 }

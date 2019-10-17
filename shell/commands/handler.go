@@ -34,9 +34,9 @@ func refreshPrompt() {
 }
 
 func printUserList() {
-	for _, user := range shell.SavedUsers {
+	for i, user := range shell.SavedUsers {
 		if user.Identity == shell.CurrentUser.Identity {
-			fmt.Println("->", user.Username)
+			fmt.Println(i+1, "->", user.Username)
 			continue
 		}
 		fmt.Println(user.Username)

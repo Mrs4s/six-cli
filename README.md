@@ -8,7 +8,7 @@
 go get github.com/Mrs4s/six-cli
 ````
 
-> 也可从 [Releases](https://github.com/Mrs4s/six-cli/release) 直接下载二进制 
+> 也可从 [Releases](https://github.com/Mrs4s/six-cli/releases) 直接下载二进制 
 
 ##  使用方法
 
@@ -32,6 +32,13 @@ mrs4s@six-pan:/$ cd target  # 进入子目录
 mrs4s@six-pan:/target$ cd /target/sub/test  # 以完整路径切换目录
 mrs4s@six-pan:/target/sub/test$ cd ..  # 返回上一层
 mrs4s@six-pan:/target/sub$ cd ../../  # 向上返回N层
+````
+
+### 获取当前工作目录
+
+````shell
+mrs4s@six-pan:/$ pwd
+/workdir/1
 ````
 
 ### 列出文件
@@ -60,4 +67,31 @@ mrs4s@six-pan:/$ ls -a  # 输出文件详细信息
 mrs4s@six-pan:/$ down file  # 下载文件
 mrs4s@six-pan:/$ down dir  # 下载文件夹
 mrs4s@six-pan:/$ down /dir/file  # 通过绝对路径下载文件
+````
+
+### 创建文件夹
+
+````shell
+mrs4s@six-pan:/$ mkdir dir  #在当前目录创建文件夹
+mrs4s@six-pan:/$ mkdir /test/dir  #根据绝对路径创建文件夹
+````
+
+### 删除文件/文件夹
+
+````shell
+mrs4s@six-pan:/$ rm file -y  #删除文件/文件夹
+mrs4s@six-pan:/$ rm file1 file2 dir -y  #删除多个文件/文件夹
+````
+
+### 获取文件hash信息
+
+````shell
+mrs4s@six-pan:/$ cksum file1 file2 
+````
+
+### 预览文件
+> 目前仅支持文本文件和torrent文件的预览, 其他文件仅能返回属性信息
+
+````shell
+mrs4s@six-pan:/$ pw file
 ````
