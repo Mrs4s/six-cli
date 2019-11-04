@@ -86,7 +86,7 @@ func PathCompleter(c *pl.Context, f bool) []string {
 		}
 		return com[1:] + "/"
 	}
-	fmt.Println(f)
+	//fmt.Println(f)
 	if f {
 		return models.SelectStrings(models.FilterStrings(append(filterDirs(files), filterFiles(files)...), filter), selector)
 	}

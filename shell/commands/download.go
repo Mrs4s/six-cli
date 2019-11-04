@@ -32,7 +32,7 @@ func (CommandHandler) Download(c *pl.Context) {
 		fmt.Println("[H] 使用方法: down <文件/目录>")
 		return
 	}
-	if path[0:1] == "/" {
+	if strings.HasPrefix(path, "/") {
 		targetPath = models.GetParentPath(path)
 	}
 	files, err := shell.CurrentUser.GetFilesByPath(targetPath)

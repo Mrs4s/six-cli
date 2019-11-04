@@ -35,6 +35,10 @@ func RunAsShell(handler pl.IHandler) {
 			fmt.Println("再次键入 Ctrl+C 以确认退出")
 			return
 		}
+		models.DefaultConf.QingzhenTokens = []string{}
+		for ind := range SavedUsers {
+			models.DefaultConf.QingzhenTokens = append(models.DefaultConf.QingzhenTokens, SavedUsers[ind].Client.QingzhenToken)
+		}
 		models.DefaultConf.SaveFile("config.json")
 		os.Exit(0)
 	})
