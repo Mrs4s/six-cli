@@ -103,6 +103,9 @@ func (CommandHandler) Download(c *pl.Context) {
 				fmt.Println("[+] 下载路径: " + task.Info.TargetFile)
 				fmt.Println("[+] 文件大小: " + models.ConvertSizeString(task.Info.ContentSize))
 				fmt.Println()
+				if task.Info.ContentSize == 0 {
+					fmt.Println("[-] 文件大小 0KB 跳过下载直接创建.")
+				}
 				bars[waitingTask].Start()
 				err := task.BeginDownload()
 				if err != nil {

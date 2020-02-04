@@ -66,6 +66,9 @@ func PathCompleter(c *pl.Context, f bool) []string {
 	if shell.CurrentPath == "/" {
 		newPath = "/" + c.Nokeys[0]
 	}
+	if strings.HasPrefix(c.Nokeys[0], "/") {
+		newPath = c.Nokeys[0]
+	}
 	files, err := shell.CurrentUser.GetFilesByPath(models.GetParentPath(newPath))
 	if err != nil {
 		return []string{}
