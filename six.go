@@ -12,7 +12,7 @@ import (
 func main() {
 	if !models.PathExists("config.json") {
 		tmpConf := &models.Config{
-			DownloadThread:    8,
+			DownloadThread:    4,
 			DownloadBlockSize: 104857600,
 		}
 		tmpConf.SaveFile("config.json")
