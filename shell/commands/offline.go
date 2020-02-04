@@ -14,9 +14,10 @@ func init() {
 	explains["Offline"] = "离线下载操作"
 }
 
+//Offline command
 func (CommandHandler) Offline(c *pl.Context) {
 	if len(c.RawArgs) == 1 {
-		fmt.Println("使用方法: offline <list/create/del> [...]")
+		fmt.Println("使用方法: offline <list/add/del/filter> [...]")
 		return
 	}
 	switch strings.ToLower(c.Nokeys[0]) {
@@ -83,5 +84,11 @@ func (CommandHandler) Offline(c *pl.Context) {
 			return
 		}
 		fmt.Println("操作完成.")
+	case "filter":
+		if len(c.Nokeys) == 1 {
+			fmt.Println("使用方法: offline filter <[-n 文件名] [-l 链接] [-s 状态] [-e 显示错误信息]>")
+			fmt.Println("过滤离线任务列表 模糊搜索.")
+			return
+		}
 	}
 }

@@ -78,6 +78,7 @@ func LoginWithAccessToken(token string) (*SixUser, error) {
 	cli := models.NewSixHttpClient(token)
 	info := gjson.Parse(cli.PostJson("https://api.6pan.cn/v2/user/info", "{}"))
 	if !info.Get("success").Bool() {
+		//fmt.Println(info)
 		return nil, errors.New("login failed: token error")
 	}
 	user := &SixUser{

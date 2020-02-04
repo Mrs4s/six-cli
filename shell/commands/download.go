@@ -32,7 +32,7 @@ func (CommandHandler) Download(c *pl.Context) {
 		fmt.Println("[H] 使用方法: down <文件/目录>")
 		return
 	}
-	if path[0:1] == "/" {
+	if strings.HasPrefix(path, "/") {
 		targetPath = models.GetParentPath(path)
 	}
 	files, err := shell.CurrentUser.GetFilesByPath(targetPath)
@@ -70,6 +70,7 @@ func (CommandHandler) Download(c *pl.Context) {
 			}
 			return []string{addr}
 		}
+		client.RefreshTime = 1000 * 60 * 3
 		downloaders = append(downloaders, client)
 	}
 	ch := make(chan bool)
@@ -99,8 +100,12 @@ func (CommandHandler) Download(c *pl.Context) {
 				fmt.Println()
 				fmt.Println("[+] 即将开始下载任务 " + strconv.FormatInt(int64(waitingTask), 10))
 				fmt.Println("[+] 文件名: " + models.GetFileName(task.Info.TargetFile))
+				fmt.Println("[+] 下载路径: " + task.Info.TargetFile)
 				fmt.Println("[+] 文件大小: " + models.ConvertSizeString(task.Info.ContentSize))
 				fmt.Println()
+				if task.Info.ContentSize == 0 {
+					fmt.Println("[-] 文件大小 0KB 跳过下载直接创建.")
+				}
 				bars[waitingTask].Start()
 				err := task.BeginDownload()
 				if err != nil {

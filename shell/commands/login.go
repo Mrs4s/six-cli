@@ -34,8 +34,21 @@ func (CommandHandler) Login(c *pl.Context) {
 	}
 	shell.CurrentUser = user
 	shell.CurrentPath = "/"
-	models.DefaultConf.QingzhenToken = user.Client.QingzhenToken
+	var flag bool
+	for _, su := range shell.SavedUsers {
+		if su.Identity == user.Identity {
+			flag = true
+		}
+	}
+	if !flag {
+		models.DefaultConf.QingzhenTokens = append(models.DefaultConf.QingzhenTokens, user.Client.QingzhenToken)
+		shell.SavedUsers = append(shell.SavedUsers, user)
+	}
 	fmt.Println("[+] 登录完成, 欢迎: " + user.Username)
+	fmt.Println()
+	if len(shell.SavedUsers) > 1 {
+		printUserList()
+	}
 	models.DefaultConf.SaveFile("config.json")
 	refreshPrompt()
 }

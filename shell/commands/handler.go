@@ -33,6 +33,16 @@ func refreshPrompt() {
 	shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(shell.CurrentPath, 30) + "$ ")
 }
 
+func printUserList() {
+	for i, user := range shell.SavedUsers {
+		if user.Identity == shell.CurrentUser.Identity {
+			fmt.Println(i+1, "->", user.Username)
+			continue
+		}
+		fmt.Println(user.Username)
+	}
+}
+
 func PathCompleter(c *pl.Context, f bool) []string {
 	if len(c.Nokeys) > 1 {
 		return []string{}
@@ -56,6 +66,9 @@ func PathCompleter(c *pl.Context, f bool) []string {
 	if shell.CurrentPath == "/" {
 		newPath = "/" + c.Nokeys[0]
 	}
+	if strings.HasPrefix(c.Nokeys[0], "/") {
+		newPath = c.Nokeys[0]
+	}
 	files, err := shell.CurrentUser.GetFilesByPath(models.GetParentPath(newPath))
 	if err != nil {
 		return []string{}
@@ -76,7 +89,7 @@ func PathCompleter(c *pl.Context, f bool) []string {
 		}
 		return com[1:] + "/"
 	}
-	fmt.Println(f)
+	//fmt.Println(f)
 	if f {
 		return models.SelectStrings(models.FilterStrings(append(filterDirs(files), filterFiles(files)...), filter), selector)
 	}

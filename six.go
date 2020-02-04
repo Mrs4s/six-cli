@@ -24,6 +24,8 @@ func main() {
 		if !models.PathExists("Downloads") {
 			_ = os.MkdirAll("Downloads", os.ModePerm)
 		}
+	} else {
+		fmt.Println("使用下载路径:", models.DefaultConf.DownloadPath)
 	}
 	if len(os.Args) == 1 {
 		shell.RunAsShell(&commands.CommandHandler{})
