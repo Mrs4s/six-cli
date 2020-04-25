@@ -3,10 +3,15 @@ package models
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
+
+// Request body
+type B map[string]interface{}
 
 // 6盘
 type SixHttpClient struct {
@@ -18,9 +23,21 @@ type SixHttpClient struct {
 func NewSixHttpClient(token string) *SixHttpClient {
 	cli := &SixHttpClient{
 		QingzhenToken: token,
-		client:        &http.Client{},
+		client: &http.Client{Transport: &http.Transport{
+			Proxy: func(req *http.Request) (*url.URL, error) {
+				return url.Parse("http://127.0.0.1:8888")
+			},
+		}},
 	}
 	return cli
+}
+
+func (cli *SixHttpClient) PostJsonObject(url string, body B) string {
+	b, err := json.Marshal(body)
+	if err != nil {
+		return ""
+	}
+	return cli.PostJson(url, string(b))
 }
 
 func (cli *SixHttpClient) PostJson(url, body string) string {
@@ -30,7 +47,7 @@ func (cli *SixHttpClient) PostJson(url, body string) string {
 	}
 	defer req.Body.Close()
 	if cli.QingzhenToken != "" {
-		req.Header["Qingzhen-Token"] = []string{cli.QingzhenToken}
+		req.Header["Authorization"] = []string{"Bearer " + cli.QingzhenToken}
 	}
 	req.Header["User-Agent"] = []string{"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:67.0) Gecko/20100101 Firefox/67.0"}
 	req.Header["Content-Type"] = []string{"application/json"}
@@ -43,7 +60,7 @@ func (cli *SixHttpClient) PostJson(url, body string) string {
 	if err != nil {
 		return ""
 	}
-	token, ok := resp.Header["Qingzhen-Token"]
+	token, ok := resp.Header["Authorization"]
 	if ok && len(token) > 0 {
 		cli.QingzhenToken = token[0]
 	}

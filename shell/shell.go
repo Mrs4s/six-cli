@@ -16,9 +16,9 @@ var (
 )
 
 func RunAsShell(handler pl.IHandler) {
-	if models.DefaultConf.QingzhenTokens != nil && len(models.DefaultConf.QingzhenTokens) > 0 {
-		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenTokens[0])
-		for _, token := range models.DefaultConf.QingzhenTokens {
+	if models.DefaultConf.Tokens != nil && len(models.DefaultConf.Tokens) > 0 {
+		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.Tokens[0])
+		for _, token := range models.DefaultConf.Tokens {
 			if user, err := six_cloud.LoginWithAccessToken(token); err == nil {
 				SavedUsers = append(SavedUsers, user)
 			}
@@ -35,9 +35,9 @@ func RunAsShell(handler pl.IHandler) {
 			fmt.Println("再次键入 Ctrl+C 以确认退出")
 			return
 		}
-		models.DefaultConf.QingzhenTokens = []string{}
+		models.DefaultConf.Tokens = []string{}
 		for ind := range SavedUsers {
-			models.DefaultConf.QingzhenTokens = append(models.DefaultConf.QingzhenTokens, SavedUsers[ind].Client.QingzhenToken)
+			models.DefaultConf.Tokens = append(models.DefaultConf.Tokens, SavedUsers[ind].Client.QingzhenToken)
 		}
 		models.DefaultConf.SaveFile("config.json")
 		os.Exit(0)
@@ -64,8 +64,8 @@ func RunAsShell(handler pl.IHandler) {
 }
 
 func RunAsCli(handler pl.IHandler) {
-	if models.DefaultConf.QingzhenTokens != nil && len(models.DefaultConf.QingzhenTokens) > 0 {
-		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.QingzhenTokens[0])
+	if models.DefaultConf.Tokens != nil && len(models.DefaultConf.Tokens) > 0 {
+		CurrentUser, _ = six_cloud.LoginWithAccessToken(models.DefaultConf.Tokens[0])
 	}
 	if CurrentUser == nil {
 		fmt.Println("[!] 请先登录!")

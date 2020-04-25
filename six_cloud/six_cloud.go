@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Mrs4s/six-cli/models"
 	"github.com/tidwall/gjson"
+	"time"
 )
 
 type (
@@ -58,6 +59,16 @@ const (
 	AlmostDownloaded                      = 900
 )
 
+var (
+	ErrWaitingLogin     = errors.New("waiting for login")
+	ErrStateWrong       = errors.New("state wrong")
+	ErrCreateDestFailed = errors.New("create destination failed")
+	ErrDestExpired      = errors.New("destination expired")
+	ErrLoginFailed      = errors.New("login failed")
+
+	ErrInvalidToken = errors.New("invalid token")
+)
+
 func LoginWithUsernameOrPhone(value, password string) (*SixUser, error) {
 	var (
 		body = `{"value":"` + value + `","password":"` + models.ToMd5(password) + `","code":""}`
@@ -74,19 +85,45 @@ func LoginWithUsernameOrPhone(value, password string) (*SixUser, error) {
 	return LoginWithAccessToken(cli.QingzhenToken)
 }
 
+func CreateDestination() (string, int64, error) {
+	cli := models.NewSixHttpClient("")
+	res := gjson.Parse(cli.PostJsonObject("https://api.6pan.cn/v3/user/createDestination", models.B{"ts": time.Now().Unix()}))
+	dest := res.Get("destination")
+	if !dest.Exists() {
+		return "", 0, ErrCreateDestFailed
+	}
+	return dest.Str, res.Get("expireTime").Int(), nil
+}
+
+func LoginWithWebToken(dest, state string) (*SixUser, error) {
+	cli := models.NewSixHttpClient("")
+	res := gjson.Parse(cli.PostJsonObject("https://api.6pan.cn/v3/user/checkDestination", models.B{"destination": dest}))
+	switch res.Get("status").Int() {
+	case 10:
+		return nil, ErrWaitingLogin
+	case 100:
+		if res.Get("state").Str != state {
+			return nil, ErrStateWrong
+		}
+		user := &SixUser{
+			Client: models.NewSixHttpClient(res.Get("token").Str),
+		}
+		user.RefreshUserInfo()
+		return user, nil
+	case -10:
+		return nil, ErrDestExpired
+	}
+	return nil, ErrLoginFailed
+}
+
 func LoginWithAccessToken(token string) (*SixUser, error) {
 	cli := models.NewSixHttpClient(token)
-	info := gjson.Parse(cli.PostJson("https://api.6pan.cn/v2/user/info", "{}"))
-	if !info.Get("success").Bool() {
-		//fmt.Println(info)
-		return nil, errors.New("login failed: token error")
-	}
 	user := &SixUser{
-		Username:   info.Get("result.name").Str,
-		Identity:   info.Get("result.identity").Int(),
-		UsedSpace:  info.Get("result.spaceUsed").Int(),
-		TotalSpace: info.Get("result.spaceCapacity").Int(),
-		Client:     cli,
+		Client: cli,
+	}
+	user.RefreshUserInfo()
+	if user.Username == "" {
+		return nil, ErrInvalidToken
 	}
 	return user, nil
 }

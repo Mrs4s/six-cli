@@ -10,7 +10,7 @@ type Config struct {
 	DownloadPath      string   `json:"downloadPath"`
 	DownloadThread    int32    `json:"downloadThread"`
 	DownloadBlockSize int64    `json:"downloadBlockSize"`
-	QingzhenTokens    []string `json:"tokens"`
+	Tokens            []string `json:"tokens"`
 }
 
 var (

@@ -3,7 +3,28 @@ package six_cloud
 import (
 	"fmt"
 	"testing"
+	"time"
 )
+
+func TestTokenLogin(t *testing.T) {
+	token, ext, err := CreateDestination()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("created: ", token, " time: ", ext)
+	fmt.Println(fmt.Sprintf("login url: https://account.6pan.cn/login?destination=%s&appid=3cnu7s71h92p&response=query&state=1234&lang=zh-CN", token))
+	for {
+		u, err := LoginWithWebToken(token, "1234")
+		if err != nil && err != ErrWaitingLogin {
+			panic(err)
+		}
+		if u != nil {
+			fmt.Println("login success: " + u.Username)
+			break
+		}
+		time.Sleep(time.Second)
+	}
+}
 
 func TestLogin(t *testing.T) {
 	user, err := LoginWithAccessToken("--")

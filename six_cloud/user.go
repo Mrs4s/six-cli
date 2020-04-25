@@ -5,35 +5,28 @@ import (
 	"errors"
 	"github.com/Mrs4s/six-cli/models"
 	"github.com/tidwall/gjson"
-	"strconv"
+	"time"
 )
 
+func (user *SixUser) RefreshUserInfo() {
+	res := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/user/info", models.B{"ts": time.Now().Unix()}))
+	if res.Get("success").Exists() {
+		return
+	}
+	user.Identity = res.Get("identity").Int()
+	user.Username = res.Get("name").Str
+	user.TotalSpace = res.Get("spaceCapacity").Int()
+	user.UsedSpace = res.Get("spaceUsed").Int()
+}
+
 func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
-	var (
-		page = 2
-		body = `{"path":"` + path + `","pageSize":50,"page": 1}`
-		info = gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/page", body))
-	)
-	if !info.Get("success").Bool() {
-		return nil, errors.New(info.Get("message").Str)
-	}
-	if info.Get("result.parent").Type == gjson.Null {
-		return nil, errors.New("path not exists")
-	}
-	res := parseFiles(info.Get("result.list").Array())
-	for int64(page) <= info.Get("result.totalPage").Int() {
-		body = `{"path":"` + path + `","pageSize":50,"page": ` + strconv.FormatInt(int64(page), 10) + `}`
-		info = gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/page", body))
-		if !info.Get("success").Bool() {
-			return res, nil
-		}
-		res = append(res, parseFiles(info.Get("result.list").Array())...)
-		page++
-	}
-	for _, file := range res {
+	res := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/list",
+		models.B{"parentPath": path, "skip": 0, "limit": 500}))
+	arr := parseFiles(res.Get("dataList").Array())
+	for _, file := range arr {
 		file.owner = user
 	}
-	return res, nil
+	return arr, nil
 }
 
 func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
@@ -69,12 +62,11 @@ func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {
 }
 
 func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
-	body := `{"path":"` + path + `"}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/get", body))
-	if !info.Get("success").Bool() {
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/download", models.B{"path": path}))
+	if info.Get("success").Exists() {
 		return "", errors.New(info.Get("message").Str)
 	}
-	return info.Get("result.downloadAddress").Str, nil
+	return info.Get("downloadAddress").Str, nil
 }
 
 func (user *SixUser) CreateDirectory(path string) error {
