@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -23,10 +22,12 @@ type SixHttpClient struct {
 func NewSixHttpClient(token string) *SixHttpClient {
 	cli := &SixHttpClient{
 		QingzhenToken: token,
-		client: &http.Client{Transport: &http.Transport{
-			Proxy: func(req *http.Request) (*url.URL, error) {
-				return url.Parse("http://127.0.0.1:8888")
-			},
+		client:        &http.Client{Transport: &http.Transport{
+			/*
+				Proxy: func(req *http.Request) (*url.URL, error) {
+					return url.Parse("http://127.0.0.1:8888")
+				},
+			*/
 		}},
 	}
 	return cli

@@ -62,7 +62,7 @@ func (CommandHandler) Offline(c *pl.Context) {
 		url := c.Nokeys[1]
 		pass := c.Keys["p"]
 		fmt.Println("正在预解析....")
-		identity, name, size, err := shell.CurrentUser.PreparseOffline(url, pass)
+		hash, name, size, err := shell.CurrentUser.PreparseOffline(url, pass)
 		if err != nil {
 			fmt.Println("解析错误:", err)
 			return
@@ -73,7 +73,7 @@ func (CommandHandler) Offline(c *pl.Context) {
 			}
 		}
 		fmt.Println("正在添加任务....")
-		err = shell.CurrentUser.AddOfflineTask(identity, func() string {
+		err = shell.CurrentUser.AddOfflineTask(hash, func() string {
 			if tar, ok := c.Keys["o"]; ok {
 				return tar
 			}

@@ -28,7 +28,7 @@ func (CommandHandler) Find(c *pl.Context) {
 			blocks = append(blocks, strings.Split(str, "*")...)
 		}
 		for _, block := range models.FilterStrings(blocks, func(s string) bool { return s != "" }) {
-			tmp, err := shell.CurrentUser.SearchFilesByName(block)
+			tmp, err := shell.CurrentUser.SearchFilesByName("", block)
 			if err == nil {
 				for _, t := range tmp {
 					var flag bool
@@ -45,7 +45,7 @@ func (CommandHandler) Find(c *pl.Context) {
 			}
 		}
 	} else {
-		files, _ = shell.CurrentUser.SearchFilesByName(c.Nokeys[0])
+		files, _ = shell.CurrentUser.SearchFilesByName("", c.Nokeys[0])
 	}
 	table := [][]string{{"序号", "创建时间", "文件大小", "文件路径"}}
 	if _, ok := c.Keys["d"]; ok {

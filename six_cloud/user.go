@@ -43,15 +43,12 @@ func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
 }
 
 func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {
-	var (
-		body = `{"page": 1,"pageSize": 200}`
-		info = gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/page", body))
-		res  []*SixOfflineTask
-	)
-	if !info.Get("success").Bool() {
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/list", models.B{"skip": 0, "limit": 500}))
+	var res []*SixOfflineTask
+	if info.Get("success").Exists() {
 		return nil, errors.New(info.Get("message").Str)
 	}
-	for _, token := range info.Get("result.list").Array() {
+	for _, token := range info.Get("dataList").Array() {
 		var task *SixOfflineTask
 		err := json.Unmarshal([]byte(token.Raw), &task)
 		if err == nil {
@@ -70,19 +67,17 @@ func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
 }
 
 func (user *SixUser) CreateDirectory(path string) error {
-	body := `{"path":"` + path + `"}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/createDirectory", body))
-	if !info.Get("success").Bool() {
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/createDirectory", models.B{"path": path}))
+	if info.Get("success").Exists() {
 		return errors.New(info.Get("message").Str)
 	}
 	return nil
 }
 
 func (user *SixUser) DeleteFile(path string) error {
-	body := `{"source":[{"path":"` + path + `"}]}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/delete", body))
-	if !info.Get("success").Bool() {
-		return errors.New(info.Get("message").Str)
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/trash", models.B{"sourcePath": []string{path}}))
+	if info.Get("successCount").Int() != 1 {
+		return errors.New("delete failed")
 	}
 	return nil
 }
@@ -96,36 +91,30 @@ func (user *SixUser) CopyFile(source, target string) error {
 	return nil
 }
 
-func (user *SixUser) SearchFilesByName(name string) ([]*SixFile, error) {
-	body := `{"pageSize":200,"name":"` + name + `"}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/pageAll", body))
-	if !info.Get("success").Bool() {
-		return nil, errors.New(info.Get("message").Str)
+func (user *SixUser) SearchFilesByName(parent, name string) ([]*SixFile, error) {
+	if parent == "" {
+		parent = "::all"
 	}
-	files := parseFiles(info.Get("result.list").Array())
-	return files, nil
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/list/", models.B{"parentIdentity": parent, "name": name}))
+	arr := parseFiles(info.Get("dataList").Array())
+	for _, file := range arr {
+		file.owner = user
+	}
+	return arr, nil
 }
 
 func (user *SixUser) PreparseOffline(url, pass string) (string, string, int64, error) {
-	body := `{"url": "` + url + `","password": "` + pass + `"}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/parseUrl", body))
-	if !info.Get("success").Bool() {
-		return "", "", 0, errors.New(info.Get("messages").Str)
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/parse", models.B{"textLink": url, "password": pass}))
+	if info.Get("success").Exists() {
+		return "", "", 0, errors.New(info.Get("message").Str)
 	}
-	if len(info.Get("result").Array()) == 0 {
-		return "", "", 0, errors.New("not any results")
-	}
-	return info.Get("result.0.identity").Str, info.Get("result.0.name").Str, info.Get("result.0.size").Int(), nil
+	return info.Get("hash").Str, info.Get("info.name").Str, info.Get("info.size").Int(), nil
 }
 
-func (user *SixUser) AddOfflineTask(identity, path string) error {
-	body := `{"path": "` + path + `","task":[{"identity" : "` + identity + `"}]}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/offline/add", body))
-	if !info.Get("success").Bool() {
-		return errors.New(info.Get("message").Str)
-	}
-	if !info.Get("result.success").Bool() {
-		return errors.New("unknown error")
+func (user *SixUser) AddOfflineTask(hash, path string) error {
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/add", models.B{"task": []models.B{{"hash": hash}}, "savePath": path}))
+	if info.Get("successCount").Int() != 1 {
+		return errors.New("unsuccessful")
 	}
 	return nil
 }
