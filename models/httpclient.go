@@ -50,7 +50,7 @@ func (cli *SixHttpClient) PostJson(url, body string) string {
 	if cli.QingzhenToken != "" {
 		req.Header["Authorization"] = []string{"Bearer " + cli.QingzhenToken}
 	}
-	req.Header["User-Agent"] = []string{"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:67.0) Gecko/20100101 Firefox/67.0"}
+	req.Header["User-Agent"] = []string{"Qingzhen-cli:0.1"}
 	req.Header["Content-Type"] = []string{"application/json"}
 	resp, err := cli.client.Do(req)
 	if err != nil {

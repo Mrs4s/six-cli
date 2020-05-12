@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	DownloadPath      string   `json:"downloadPath"`
+	DownloadPath      string   `json:"downloadPath" `
 	DownloadThread    int32    `json:"downloadThread"`
 	DownloadBlockSize int64    `json:"downloadBlockSize"`
 	Tokens            []string `json:"tokens"`

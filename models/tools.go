@@ -15,32 +15,6 @@ func ToMd5(str string) string {
 	return hex.EncodeToString(m.Sum(nil))
 }
 
-func GetParentPath(path string) string {
-	list := strings.Split(path, "/")
-	var tmp []string
-	for i := 0; i < len(list)-1; i++ {
-		tmp = append(tmp, list[i])
-	}
-	parentPath := strings.Join(tmp, "/")
-	if parentPath == "" {
-		return "/"
-	}
-	return parentPath
-}
-
-func GetFileName(path string) string {
-	length := len(path)
-	index := length - 1
-	for index > 0 {
-		char := path[index-1 : index]
-		if char == "\\" || char == "/" || char == ":" {
-			return path[index:length]
-		}
-		index--
-	}
-	return path
-}
-
 func CombinePaths(path1, path2, sep string) string {
 	if len(path2) == 0 {
 		return path1

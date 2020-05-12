@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pl "github.com/Mrs4s/power-liner"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
 	"strings"
@@ -26,8 +27,8 @@ func (CommandHandler) Explains() map[string]string {
 }
 
 func refreshPrompt() {
-	if models.GetParentPath(shell.CurrentPath) != "/" {
-		shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(models.GetFileName(shell.CurrentPath), 30) + "$ ")
+	if fs.GetParentPath(shell.CurrentPath) != "/" {
+		shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(fs.GetFileName(shell.CurrentPath), 30) + "$ ")
 		return
 	}
 	shell.App.SetPrompt(shell.CurrentUser.Username + "@six-pan:" + models.ShortPath(shell.CurrentPath, 30) + "$ ")
@@ -69,7 +70,7 @@ func PathCompleter(c *pl.Context, f bool) []string {
 	if strings.HasPrefix(c.Nokeys[0], "/") {
 		newPath = c.Nokeys[0]
 	}
-	files, err := shell.CurrentUser.GetFilesByPath(models.GetParentPath(newPath))
+	files, err := shell.CurrentUser.GetFilesByPath(fs.GetParentPath(newPath))
 	if err != nil {
 		return []string{}
 	}
@@ -77,10 +78,10 @@ func PathCompleter(c *pl.Context, f bool) []string {
 		if strings.HasSuffix(newPath, "/") {
 			return true
 		}
-		return strings.HasPrefix(s, models.GetFileName(newPath))
+		return strings.HasPrefix(s, fs.GetFileName(newPath))
 	}
 	selector := func(s string) string {
-		com := models.CombinePaths(models.GetParentPath(newPath), s, "/")
+		com := models.CombinePaths(fs.GetParentPath(newPath), s, "/")
 		if strings.Contains(com, " ") {
 			return "\"" + com[1:] + "\""
 		}
@@ -89,7 +90,7 @@ func PathCompleter(c *pl.Context, f bool) []string {
 		}
 		return com[1:] + "/"
 	}
-	//fmt.Println(f)
+	//fmt.Println(f)f
 	if f {
 		return models.SelectStrings(models.FilterStrings(append(filterDirs(files), filterFiles(files)...), filter), selector)
 	}

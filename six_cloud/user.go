@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/tidwall/gjson"
 	"time"
 )
@@ -30,12 +31,12 @@ func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
 }
 
 func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
-	files, err := user.GetFilesByPath(models.GetParentPath(path))
+	files, err := user.GetFilesByPath(fs.GetParentPath(path))
 	if err != nil {
 		return nil, err
 	}
 	for _, file := range files {
-		if file.Name == models.GetFileName(path) {
+		if file.Name == fs.GetFileName(path) {
 			return file, nil
 		}
 	}
@@ -67,7 +68,7 @@ func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
 }
 
 func (user *SixUser) CreateDirectory(path string) error {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/createDirectory", models.B{"path": path}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file", models.B{"path": path}))
 	if info.Get("success").Exists() {
 		return errors.New(info.Get("message").Str)
 	}
@@ -117,6 +118,33 @@ func (user *SixUser) AddOfflineTask(hash, path string) error {
 		return errors.New("unsuccessful")
 	}
 	return nil
+}
+
+func (user *SixUser) CreateUploadTree(remote string, files []string) map[string]string {
+	res := make(map[string]string)
+	for _, f := range files {
+		p := remote + "/" + fs.GetFileName(f)
+		if fs.IsDir(f) {
+			_ = user.CreateDirectory(p)
+			for k, v := range user.CreateUploadTree(p, fs.GetDirEntities(f)) {
+				res[k] = v
+			}
+			continue
+		}
+		res[p] = f
+	}
+	return res
+}
+
+func (user *SixUser) CreateUploadToken(path, name, hash string) SixUploadToken {
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/uploadToken", models.B{"path": path, "name": name, "hash": hash}))
+	if info.Get("created").Bool() {
+		return SixUploadToken{Cached: true}
+	}
+	return SixUploadToken{
+		UploadToken: info.Get("uploadToken").Str,
+		UploadUrl:   info.Get("partUploadUrl").Str,
+	}
 }
 
 func parseFiles(list []gjson.Result) []*SixFile {

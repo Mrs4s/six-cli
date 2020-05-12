@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pl "github.com/Mrs4s/power-liner"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
 	"strconv"
@@ -25,25 +26,25 @@ func (CommandHandler) CheckSum(c *pl.Context) {
 	for _, file := range targets {
 		files, err := shell.CurrentUser.GetFilesByPath(shell.CurrentPath)
 		if strings.HasPrefix(file, "/") {
-			files, err = shell.CurrentUser.GetFilesByPath(models.GetParentPath(file))
+			files, err = shell.CurrentUser.GetFilesByPath(fs.GetParentPath(file))
 		}
 		if err != nil {
-			fmt.Println("[!] 获取文件", models.GetFileName(file), "信息失败:", err)
+			fmt.Println("[!] 获取文件", fs.GetFileName(file), "信息失败:", err)
 			continue
 		}
 		var target *six_cloud.SixFile
 		for _, sub := range files {
-			if sub.Name == models.GetFileName(file) {
+			if sub.Name == fs.GetFileName(file) {
 				target = sub
 				break
 			}
 		}
 		if target == nil {
-			fmt.Println("[!] 获取文件", models.GetFileName(file), "信息失败: 文件不存在")
+			fmt.Println("[!] 获取文件", fs.GetFileName(file), "信息失败: 文件不存在")
 			continue
 		}
 		if target.IsDir {
-			fmt.Println("[!] 获取文件", models.GetFileName(file), "信息失败: 目标为文件夹")
+			fmt.Println("[!] 获取文件", fs.GetFileName(file), "信息失败: 目标为文件夹")
 			continue
 		}
 		table = append(table, []string{target.ETag, strconv.FormatInt(target.Size, 10), target.Name})

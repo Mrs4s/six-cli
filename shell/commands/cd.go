@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pl "github.com/Mrs4s/power-liner"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"strings"
 )
@@ -32,13 +33,13 @@ func (CommandHandler) JoinPath(c *pl.Context) {
 		if shell.CurrentPath == "/" {
 			return
 		}
-		shell.CurrentPath = models.GetParentPath(shell.CurrentPath)
+		shell.CurrentPath = fs.GetParentPath(shell.CurrentPath)
 	case strings.Contains(arg, "../"):
 		if shell.CurrentPath == "/" {
 			return
 		}
 		for i := 0; i < strings.Count(arg, "../"); i++ {
-			shell.CurrentPath = models.GetParentPath(shell.CurrentPath)
+			shell.CurrentPath = fs.GetParentPath(shell.CurrentPath)
 		}
 	default:
 		newPath := models.CombinePaths(shell.CurrentPath, arg, "/")

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pl "github.com/Mrs4s/power-liner"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"strings"
 )
@@ -17,7 +18,7 @@ func (CommandHandler) Delete(c *pl.Context) {
 	targets := models.FilterStrings(c.Nokeys, func(s string) bool { return s != "" && s != " " })
 	for _, path := range targets {
 		if _, ok := c.Keys["y"]; !ok {
-			if in, _ := shell.App.ReadLine("[?] 确认是否删除 " + models.GetFileName(path) + " (y/n):"); strings.ToLower(in) != "y" {
+			if in, _ := shell.App.ReadLine("[?] 确认是否删除 " + fs.GetFileName(path) + " (y/n):"); strings.ToLower(in) != "y" {
 				continue
 			}
 		}

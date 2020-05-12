@@ -19,10 +19,7 @@ go get github.com/Mrs4s/six-cli
 ### 登录
 
 ````shell
-guest@six-pan:/$ login
-请输入用户名: mrs4s
-请输入密码:           # 密码不会回显，输完直接回车即可
-登录完成, 欢迎: mrs4s
+guest@six-pan:/$ login   #然后按提示操作即可
 ````
 
 ### 切换工作目录

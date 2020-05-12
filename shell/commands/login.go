@@ -23,7 +23,7 @@ func (CommandHandler) Login(c *pl.Context) {
 		return
 	}
 	state := strconv.FormatInt(time.Now().Unix(), 10)
-	fmt.Println("请在浏览器中打开以下链接, 并完成登录操作.")
+	fmt.Println("[+] 请在浏览器中打开以下链接, 并完成登录操作.")
 	fmt.Println()
 	fmt.Println(fmt.Sprintf("https://account.6pan.cn/login?destination=%s&appid=3cnu7s71h92p&response=query&state=%s&lang=zh-CN", token, state))
 	fmt.Println()

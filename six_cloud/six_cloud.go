@@ -49,6 +49,12 @@ type (
 		ErrorMessage string `json:"errorMessage"`
 	}
 
+	SixUploadToken struct {
+		UploadToken string
+		UploadUrl   string
+		Cached      bool
+	}
+
 	SixOfflineTaskStatus int
 )
 

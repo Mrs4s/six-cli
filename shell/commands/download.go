@@ -5,6 +5,7 @@ import (
 	httpDownloader "github.com/Mrs4s/go-http-downloader"
 	pl "github.com/Mrs4s/power-liner"
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"github.com/Mrs4s/six-cli/six_cloud"
 	"github.com/cheggaaa/pb"
@@ -33,7 +34,7 @@ func (CommandHandler) Download(c *pl.Context) {
 		return
 	}
 	if strings.HasPrefix(path, "/") {
-		targetPath = models.GetParentPath(path)
+		targetPath = fs.GetParentPath(path)
 	}
 	files, err := shell.CurrentUser.GetFilesByPath(targetPath)
 	if err != nil {
@@ -42,7 +43,7 @@ func (CommandHandler) Download(c *pl.Context) {
 	}
 	var target *six_cloud.SixFile
 	for _, file := range files {
-		if strings.HasPrefix(file.Name, models.GetFileName(path)) {
+		if strings.HasPrefix(file.Name, fs.GetFileName(path)) {
 			target = file
 			continue
 		}
@@ -53,7 +54,7 @@ func (CommandHandler) Download(c *pl.Context) {
 	}
 	var downloaders []*httpDownloader.DownloaderClient
 	for key, file := range target.GetLocalTree(models.DefaultConf.DownloadPath) {
-		fmt.Println("[+] 添加下载", models.ShortString(models.GetFileName(file.Path), 70))
+		fmt.Println("[+] 添加下载", models.ShortString(fs.GetFileName(file.Path), 70))
 		addr, err := file.GetDownloadAddress()
 		if err != nil {
 			fmt.Println("[!] 获取文件", file.Name, "的下载链接失败:", err)
@@ -77,7 +78,7 @@ func (CommandHandler) Download(c *pl.Context) {
 	defer close(ch)
 	var bars []*pb.ProgressBar
 	for _, task := range downloaders {
-		bar := pb.New64(task.Info.ContentSize).Prefix(models.ShortString(models.GetFileName(task.Info.TargetFile), 20)).SetUnits(pb.U_BYTES)
+		bar := pb.New64(task.Info.ContentSize).Prefix(models.ShortString(fs.GetFileName(task.Info.TargetFile), 20)).SetUnits(pb.U_BYTES)
 		bar.ShowSpeed = true
 		bars = append(bars, bar)
 	}
@@ -99,7 +100,7 @@ func (CommandHandler) Download(c *pl.Context) {
 				task := downloaders[waitingTask]
 				fmt.Println()
 				fmt.Println("[+] 即将开始下载任务 " + strconv.FormatInt(int64(waitingTask), 10))
-				fmt.Println("[+] 文件名: " + models.GetFileName(task.Info.TargetFile))
+				fmt.Println("[+] 文件名: " + fs.GetFileName(task.Info.TargetFile))
 				fmt.Println("[+] 下载路径: " + task.Info.TargetFile)
 				fmt.Println("[+] 文件大小: " + models.ConvertSizeString(task.Info.ContentSize))
 				fmt.Println()
@@ -110,16 +111,16 @@ func (CommandHandler) Download(c *pl.Context) {
 				err := task.BeginDownload()
 				if err != nil {
 					bars[waitingTask].Finish()
-					fmt.Println("[-] 文件", models.GetFileName(task.Info.TargetFile), "下载失败:", err)
+					fmt.Println("[-] 文件", fs.GetFileName(task.Info.TargetFile), "下载失败:", err)
 					continue
 				}
 				task.OnCompleted(func() {
 					bars[waitingTask].Finish()
-					fmt.Println("[+] 文件", models.GetFileName(task.Info.TargetFile), "下载完成")
+					fmt.Println("[+] 文件", fs.GetFileName(task.Info.TargetFile), "下载完成")
 				})
 				task.OnFailed(func(err error) {
 					bars[waitingTask].Finish()
-					fmt.Println("[-] 文件", models.GetFileName(task.Info.TargetFile), "下载失败:", err)
+					fmt.Println("[-] 文件", fs.GetFileName(task.Info.TargetFile), "下载失败:", err)
 				})
 			}
 			if downloadingCount == 0 && waitingTask == -1 {
