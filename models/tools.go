@@ -71,9 +71,15 @@ func ShortPath(path string, length int) string {
 	return "/" + strings.Join(SelectStrings(sub, func(s string) string { return ShortString(s, length) }), "/")
 }
 
-func PathExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil || os.IsExist(err)
+func ToIdentity(path string) string {
+	p := strings.TrimSpace(path)
+	if strings.HasSuffix(p, "/") {
+		p = p[:len(p)-1]
+	}
+	if !strings.HasPrefix(p, "/") {
+		p = "/" + p
+	}
+	return ToMd5(p)
 }
 
 func GetFileExtension(file string) string {

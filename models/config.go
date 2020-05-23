@@ -7,10 +7,17 @@ import (
 )
 
 type Config struct {
-	DownloadPath      string   `json:"downloadPath" `
-	DownloadThread    int32    `json:"downloadThread"`
-	DownloadBlockSize int64    `json:"downloadBlockSize"`
-	Tokens            []string `json:"tokens"`
+	DownloadPath      string       `json:"downloadPath" `
+	DownloadThread    int32        `json:"downloadThread"`
+	DownloadBlockSize int64        `json:"downloadBlockSize"`
+	Mount             *MountConfig `json:"mount"`
+	Tokens            []string     `json:"tokens"`
+}
+
+type MountConfig struct {
+	AllowPreload bool  `json:"allowPreload"`
+	ChunkSize    int64 `json:"chunkSize"`
+	ChunkMax     int64 `json:"chunkMax"`
 }
 
 var (

@@ -24,20 +24,11 @@ func (CommandHandler) CheckSum(c *pl.Context) {
 	}
 	table := [][]string{{"Hash", "文件大小(字节)", "文件名"}}
 	for _, file := range targets {
-		files, err := shell.CurrentUser.GetFilesByPath(shell.CurrentPath)
-		if strings.HasPrefix(file, "/") {
-			files, err = shell.CurrentUser.GetFilesByPath(fs.GetParentPath(file))
-		}
-		if err != nil {
-			fmt.Println("[!] 获取文件", fs.GetFileName(file), "信息失败:", err)
-			continue
-		}
 		var target *six_cloud.SixFile
-		for _, sub := range files {
-			if sub.Name == fs.GetFileName(file) {
-				target = sub
-				break
-			}
+		if strings.HasPrefix(file, "/") {
+			target, _ = shell.CurrentUser.GetFileByPath(file)
+		} else {
+			target, _ = shell.CurrentUser.GetFileByPath(shell.CurrentPath + "/" + file)
 		}
 		if target == nil {
 			fmt.Println("[!] 获取文件", fs.GetFileName(file), "信息失败: 文件不存在")

@@ -9,6 +9,17 @@ import (
 	"time"
 )
 
+func (user *SixUser) GetRootFile() *SixFile {
+	return &SixFile{
+		Identity:     "root",
+		UserIdentity: user.Identity,
+		Path:         "/",
+		Name:         "root",
+		IsDir:        true,
+		owner:        user,
+	}
+}
+
 func (user *SixUser) RefreshUserInfo() {
 	res := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/user/info", models.B{"ts": time.Now().Unix()}))
 	if res.Get("success").Exists() {
@@ -31,16 +42,18 @@ func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
 }
 
 func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
-	files, err := user.GetFilesByPath(fs.GetParentPath(path))
+	id := models.ToIdentity(path)
+	b, err := user.Client.GetBytes("https://api.6pan.cn/v3/file/" + id)
 	if err != nil {
 		return nil, err
 	}
-	for _, file := range files {
-		if file.Name == fs.GetFileName(path) {
-			return file, nil
-		}
+	var file *SixFile
+	err = json.Unmarshal(b, &file)
+	if err != nil {
+		return nil, err
 	}
-	return nil, errors.New("not found")
+	file.owner = user
+	return file, nil
 }
 
 func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {

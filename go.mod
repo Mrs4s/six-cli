@@ -3,6 +3,7 @@ module github.com/Mrs4s/six-cli
 go 1.12
 
 require (
+	bazil.org/fuse v0.0.0-20200117225306-7b5117fecadc
 	github.com/Mrs4s/go-http-downloader v0.0.0-20191014103207-7f76db391012
 	github.com/Mrs4s/go-six-cloud-upload-sdk v0.0.0-20191227091018-aaeacb433566
 	github.com/Mrs4s/power-liner v0.0.0-20190813010520-d14dc4ea3290

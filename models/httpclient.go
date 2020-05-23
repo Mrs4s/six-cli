@@ -73,6 +73,10 @@ func (cli *SixHttpClient) GetBytes(url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if cli.QingzhenToken != "" {
+		req.Header["Authorization"] = []string{"Bearer " + cli.QingzhenToken}
+	}
+	req.Header["User-Agent"] = []string{"Qingzhen-cli:0.1"}
 	resp, err := cli.client.Do(req)
 	if err != nil {
 		return nil, err

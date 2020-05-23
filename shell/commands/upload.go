@@ -4,7 +4,6 @@ import (
 	"fmt"
 	sixcloudUploader "github.com/Mrs4s/go-six-cloud-upload-sdk"
 	pl "github.com/Mrs4s/power-liner"
-	"github.com/Mrs4s/six-cli/models"
 	"github.com/Mrs4s/six-cli/models/fs"
 	"github.com/Mrs4s/six-cli/shell"
 	"os"
@@ -27,7 +26,7 @@ func (CommandHandler) Upload(c *pl.Context) {
 	if r, ok := c.Keys["o"]; ok {
 		remote = r
 	}
-	if !models.PathExists(local) {
+	if !fs.PathExists(local) {
 		fmt.Println("[!] 本地文件不存在.")
 		return
 	}

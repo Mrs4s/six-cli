@@ -2,6 +2,7 @@ package six_cloud
 
 import (
 	"github.com/Mrs4s/six-cli/models"
+	"github.com/Mrs4s/six-cli/models/fs"
 	"os"
 )
 
@@ -15,7 +16,7 @@ func (file *SixFile) GetChildren() []*SixFile {
 }
 
 func (file *SixFile) GetLocalTree(localPath string) map[string]*SixFile {
-	if !models.PathExists(localPath) {
+	if !fs.PathExists(localPath) {
 		_ = os.MkdirAll(localPath, os.ModePerm)
 	}
 	result := make(map[string]*SixFile)

@@ -37,6 +37,11 @@ func GetDirEntities(path string) []string {
 	return res
 }
 
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
+}
+
 func GetParentPath(path string) string {
 	list := strings.Split(path, "/")
 	var tmp []string
