@@ -60,7 +60,11 @@ func (CommandHandler) Download(c *pl.Context) {
 			fmt.Println("[!] 获取文件", file.Name, "的下载链接失败:", err)
 			continue
 		}
-		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, models.DefaultConf.DownloadBlockSize, int(models.DefaultConf.DownloadThread),
+		blockSize := models.DefaultConf.DownloadBlockSize
+		if file.Size > 1024*1024*1024 {
+			blockSize = file.Size / int64(models.DefaultConf.DownloadThread)
+		}
+		info, err := httpDownloader.NewDownloaderInfo([]string{addr}, key, blockSize, int(models.DefaultConf.DownloadThread),
 			map[string]string{"User-Agent": "Six-cli download engine"})
 		client := httpDownloader.NewClient(info)
 		p := file

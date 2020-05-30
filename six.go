@@ -13,7 +13,7 @@ func main() {
 	if !fs.PathExists("config.json") {
 		tmpConf := &models.Config{
 			DownloadThread:    4,
-			DownloadBlockSize: 104857600,
+			DownloadBlockSize: 104857600 * 5,
 			Mount: &models.MountConfig{
 				AllowPreload: true,
 				ChunkSize:    1024 * 1024,

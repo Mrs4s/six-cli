@@ -59,8 +59,7 @@ func NewCache(file *six_cloud.SixFile) (*FileCache, error) {
 func (c *FileCache) loop() {
 	downloadQueue := make(chan CacheRequest)
 	go func() {
-		for r := range downloadQueue {
-			// 二次校验
+		do := func(r CacheRequest) {
 			if b, ok := c.Chunks[r.Request.ChunkId]; ok {
 				if r.Callback != nil {
 					begin := int64(math.Min(float64(r.Request.ChunkOffset), float64(len(b))))
@@ -70,7 +69,7 @@ func (c *FileCache) loop() {
 					}
 					close(r.Callback)
 				}
-				continue
+				return
 			}
 			chunkStart, chunkEnd := getChunk(r.Request.ChunkId)
 			addr, err := c.File.GetDownloadAddress()
@@ -104,6 +103,10 @@ func (c *FileCache) loop() {
 				}
 				close(r.Callback)
 			}
+		}
+		for r := range downloadQueue {
+			go do(r)
+			do(<-downloadQueue)
 		}
 	}()
 	for req := range c.queue {
