@@ -21,7 +21,7 @@ func (user *SixUser) GetRootFile() *SixFile {
 }
 
 func (user *SixUser) RefreshUserInfo() {
-	res := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/user/info", models.B{"ts": time.Now().Unix()}))
+	res := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/user/info", models.B{"ts": time.Now().Unix()}))
 	if res.Get("success").Exists() {
 		return
 	}
@@ -32,7 +32,7 @@ func (user *SixUser) RefreshUserInfo() {
 }
 
 func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
-	res := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/list",
+	res := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/files/list",
 		models.B{"parentPath": path, "skip": 0, "limit": 500}))
 	arr := parseFiles(res.Get("dataList").Array())
 	for _, file := range arr {
@@ -43,7 +43,7 @@ func (user *SixUser) GetFilesByPath(path string) ([]*SixFile, error) {
 
 func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
 	id := models.ToIdentity(path)
-	b, err := user.Client.GetBytes("https://api.6pan.cn/v3/file/" + id)
+	b, err := user.Client.GetBytes("https://api.2dland.cn/v3/file/" + id)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (user *SixUser) GetFileByPath(path string) (*SixFile, error) {
 }
 
 func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/list", models.B{"skip": 0, "limit": 500}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/offline/list", models.B{"skip": 0, "limit": 500}))
 	var res []*SixOfflineTask
 	if info.Get("success").Exists() {
 		return nil, errors.New(info.Get("message").Str)
@@ -73,7 +73,7 @@ func (user *SixUser) GetOfflineTasks() ([]*SixOfflineTask, error) {
 }
 
 func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/download", models.B{"path": path}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/file/download", models.B{"path": path}))
 	if info.Get("success").Exists() {
 		return "", errors.New(info.Get("message").Str)
 	}
@@ -81,7 +81,7 @@ func (user *SixUser) GetDownloadAddressByPath(path string) (string, error) {
 }
 
 func (user *SixUser) CreateDirectory(path string) error {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file", models.B{"path": path}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/file", models.B{"path": path}))
 	if info.Get("success").Exists() {
 		return errors.New(info.Get("message").Str)
 	}
@@ -89,7 +89,7 @@ func (user *SixUser) CreateDirectory(path string) error {
 }
 
 func (user *SixUser) DeleteFile(path string) error {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/trash", models.B{"sourcePath": []string{path}}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/file/trash", models.B{"sourcePath": []string{path}}))
 	if info.Get("successCount").Int() != 1 {
 		return errors.New("delete failed")
 	}
@@ -98,7 +98,7 @@ func (user *SixUser) DeleteFile(path string) error {
 
 func (user *SixUser) CopyFile(source, target string) error {
 	body := `{"source": [{"path": "` + source + `"}],"destination": {"path": "` + target + `"}}`
-	info := gjson.Parse(user.Client.PostJson("https://api.6pan.cn/v2/files/copy", body))
+	info := gjson.Parse(user.Client.PostJson("https://api.2dland.cn/v2/files/copy", body))
 	if !info.Get("success").Bool() {
 		return errors.New(info.Get("message").Str)
 	}
@@ -109,7 +109,7 @@ func (user *SixUser) SearchFilesByName(parent, name string) ([]*SixFile, error) 
 	if parent == "" {
 		parent = "::all"
 	}
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/files/list/", models.B{"parentIdentity": parent, "name": name}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/files/list/", models.B{"parentIdentity": parent, "name": name}))
 	arr := parseFiles(info.Get("dataList").Array())
 	for _, file := range arr {
 		file.owner = user
@@ -118,7 +118,7 @@ func (user *SixUser) SearchFilesByName(parent, name string) ([]*SixFile, error) 
 }
 
 func (user *SixUser) PreparseOffline(url, pass string) (string, string, int64, error) {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/parse", models.B{"textLink": url, "password": pass}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/offline/parse", models.B{"textLink": url, "password": pass}))
 	if info.Get("success").Exists() {
 		return "", "", 0, errors.New(info.Get("message").Str)
 	}
@@ -126,7 +126,7 @@ func (user *SixUser) PreparseOffline(url, pass string) (string, string, int64, e
 }
 
 func (user *SixUser) AddOfflineTask(hash, path string) error {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/offline/add", models.B{"task": []models.B{{"hash": hash}}, "savePath": path}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/offline/add", models.B{"task": []models.B{{"hash": hash}}, "savePath": path}))
 	if info.Get("successCount").Int() != 1 {
 		return errors.New("unsuccessful")
 	}
@@ -150,7 +150,7 @@ func (user *SixUser) CreateUploadTree(remote string, files []string) map[string]
 }
 
 func (user *SixUser) CreateUploadToken(path, name, hash string) SixUploadToken {
-	info := gjson.Parse(user.Client.PostJsonObject("https://api.6pan.cn/v3/file/uploadToken", models.B{"path": path, "name": name, "hash": hash}))
+	info := gjson.Parse(user.Client.PostJsonObject("https://api.2dland.cn/v3/file/uploadToken", models.B{"path": path, "name": name, "hash": hash}))
 	if info.Get("created").Bool() {
 		return SixUploadToken{Cached: true}
 	}

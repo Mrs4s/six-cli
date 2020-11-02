@@ -79,7 +79,7 @@ func LoginWithUsernameOrPhone(value, password string) (*SixUser, error) {
 	var (
 		body = `{"value":"` + value + `","password":"` + models.ToMd5(password) + `","code":""}`
 		cli  = models.NewSixHttpClient("")
-		res  = cli.PostJson("https://api.6pan.cn/v2/user/login", body)
+		res  = cli.PostJson("https://api.2dland.cn/v2/user/login", body)
 	)
 	if res == "" {
 		return nil, errors.New("login failed")
@@ -93,7 +93,7 @@ func LoginWithUsernameOrPhone(value, password string) (*SixUser, error) {
 
 func CreateDestination() (string, int64, error) {
 	cli := models.NewSixHttpClient("")
-	res := gjson.Parse(cli.PostJsonObject("https://api.6pan.cn/v3/user/createDestination", models.B{"ts": time.Now().Unix()}))
+	res := gjson.Parse(cli.PostJsonObject("https://api.2dland.cn/v3/user/createDestination", models.B{"ts": time.Now().Unix()}))
 	dest := res.Get("destination")
 	if !dest.Exists() {
 		return "", 0, ErrCreateDestFailed
@@ -103,7 +103,7 @@ func CreateDestination() (string, int64, error) {
 
 func LoginWithWebToken(dest, state string) (*SixUser, error) {
 	cli := models.NewSixHttpClient("")
-	res := gjson.Parse(cli.PostJsonObject("https://api.6pan.cn/v3/user/checkDestination", models.B{"destination": dest}))
+	res := gjson.Parse(cli.PostJsonObject("https://api.2dland.cn/v3/user/checkDestination", models.B{"destination": dest}))
 	switch res.Get("status").Int() {
 	case 10:
 		return nil, ErrWaitingLogin
